@@ -1,0 +1,207 @@
+<h2 class="sr-only">Calculadora interactiva de nómina basada en el XXI Convenio de la Industria Química con sliders para ajustar días trabajados, horas nocturnas y domingos</h2>
+
+<style>
+.section{margin-bottom:1.25rem}
+.section-title{font-size:13px;color:var(--color-text-secondary);margin:0 0 8px;text-transform:uppercase;letter-spacing:0.5px}
+.row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.row label{font-size:14px;flex:1}
+.row .val{font-size:14px;font-weight:500;min-width:60px;text-align:right;font-variant-numeric:tabular-nums}
+.row input[type=range]{flex:2}
+.line{display:flex;justify-content:space-between;padding:6px 0;font-size:14px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.line:last-child{border-bottom:none}
+.line .lbl{color:var(--color-text-secondary)}
+.line .amt{font-variant-numeric:tabular-nums}
+.line.highlight{font-weight:500;font-size:15px;border-top:0.5px solid var(--color-border-secondary);padding-top:10px;margin-top:6px}
+.metric-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:1rem 0}
+.metric{background:var(--color-background-secondary);padding:1rem;border-radius:var(--border-radius-md)}
+.metric .ml{font-size:12px;color:var(--color-text-secondary);margin:0 0 4px}
+.metric .mv{font-size:20px;font-weight:500;font-variant-numeric:tabular-nums;margin:0}
+.metric.gross{background:var(--color-background-info)}
+.metric.gross .ml{color:var(--color-text-info)}
+.metric.gross .mv{color:var(--color-text-info)}
+.metric.deduct .mv{color:var(--color-text-danger)}
+.metric.net{background:var(--color-background-success)}
+.metric.net .ml{color:var(--color-text-success)}
+.metric.net .mv{color:var(--color-text-success);font-size:24px}
+.cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem}
+.btn-row{display:flex;gap:8px;margin:0.5rem 0 1rem;flex-wrap:wrap}
+.btn-row button{font-size:13px;padding:6px 12px}
+</style>
+
+<div class="metric-grid">
+  <div class="metric gross"><p class="ml">Total devengos</p><p class="mv" id="m-bruto">2.705,37 €</p></div>
+  <div class="metric deduct"><p class="ml">Deducciones</p><p class="mv" id="m-ded">695,90 €</p></div>
+  <div class="metric net"><p class="ml">Líquido</p><p class="mv" id="m-net">1.995,98 €</p></div>
+</div>
+
+<div class="btn-row">
+  <button onclick="setPreset('abril')">Abril real</button>
+  <button onclick="setPreset('vacio')">Sin pluses variables</button>
+  <button onclick="setPreset('intenso')">Mes intenso</button>
+</div>
+
+<div class="section">
+  <p class="section-title">Variables del mes</p>
+  <div class="row">
+    <label for="dias">Días del mes cotizados</label>
+    <input type="range" id="dias" min="1" max="30" step="1" value="30">
+    <span class="val" id="dias-v">30</span>
+  </div>
+  <div class="row">
+    <label for="noches">Horas nocturnas trabajadas</label>
+    <input type="range" id="noches" min="0" max="120" step="8" value="56">
+    <span class="val" id="noches-v">56 h</span>
+  </div>
+  <div class="row">
+    <label for="domingos">Domingos trabajados</label>
+    <input type="range" id="domingos" min="0" max="5" step="1" value="2">
+    <span class="val" id="domingos-v">2</span>
+  </div>
+  <div class="row">
+    <label for="irpf">Tipo IRPF (%)</label>
+    <input type="range" id="irpf" min="0" max="40" step="0.01" value="18.27">
+    <span class="val" id="irpf-v">18,27%</span>
+  </div>
+</div>
+
+<div class="cols">
+  <div class="card">
+    <p class="section-title">Devengos</p>
+    <div class="line"><span class="lbl">SMG Convenio</span><span class="amt" id="d-smg">1.682,95 €</span></div>
+    <div class="line"><span class="lbl">Plus Convenio</span><span class="amt" id="d-pc">297,46 €</span></div>
+    <div class="line"><span class="lbl">Plus Transporte</span><span class="amt" id="d-pt">54,70 €</span></div>
+    <div class="line"><span class="lbl">Plus Asistencia</span><span class="amt" id="d-pa">54,07 €</span></div>
+    <div class="line"><span class="lbl">Plus Turnicidad</span><span class="amt" id="d-tur">393,24 €</span></div>
+    <div class="line"><span class="lbl">Plus Nocturno</span><span class="amt" id="d-noc">178,08 €</span></div>
+    <div class="line"><span class="lbl">Plus Domingo</span><span class="amt" id="d-dom">31,38 €</span></div>
+    <div class="line"><span class="lbl">Seguro Vida</span><span class="amt" id="d-sv">13,49 €</span></div>
+    <div class="line highlight"><span>Total devengos</span><span class="amt" id="d-total">2.705,37 €</span></div>
+  </div>
+
+  <div class="card">
+    <p class="section-title">Deducciones</p>
+    <div class="line"><span class="lbl">Cont. Comunes (4,70%)</span><span class="amt" id="ss-cc">145,80 €</span></div>
+    <div class="line"><span class="lbl">Desempleo (1,55%)</span><span class="amt" id="ss-des">48,08 €</span></div>
+    <div class="line"><span class="lbl">Formación (0,10%)</span><span class="amt" id="ss-fp">3,10 €</span></div>
+    <div class="line"><span class="lbl">MEI (0,15%)</span><span class="amt" id="ss-mei">4,65 €</span></div>
+    <div class="line"><span class="lbl">IRPF salario</span><span class="amt" id="ir-sal">491,81 €</span></div>
+    <div class="line"><span class="lbl">IRPF seguro vida</span><span class="amt" id="ir-sv">2,46 €</span></div>
+    <div class="line highlight"><span>Total deducciones</span><span class="amt" id="ded-total">695,90 €</span></div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:1rem">
+  <p class="section-title">Bases de cotización</p>
+  <div class="line"><span class="lbl">Remuneración mensual</span><span class="amt" id="b-rem">2.705,37 €</span></div>
+  <div class="line"><span class="lbl">Prorrateo pagas extras</span><span class="amt" id="b-pp">396,73 €</span></div>
+  <div class="line highlight"><span>Base cotización SS</span><span class="amt" id="b-tot">3.102,10 €</span></div>
+</div>
+
+<script>
+const fmt = n => new Intl.NumberFormat('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n)+' €';
+
+const RATES = {
+  smg: 56.0983,
+  plusConv: 9.9152,
+  plusTrans: 1.8233,
+  plusAsist: 1.8023,
+  plusTur: 13.1080,
+  plusNoc: 3.1800,
+  plusDom: 15.6900,
+  segVida: 13.49,
+  prorrateoBase: 396.73,
+  ssCC: 0.047,
+  ssDes: 0.0155,
+  ssFP: 0.001,
+  ssMEI: 0.0015
+};
+
+const presets = {
+  abril:    {dias:30, noches:56,  domingos:2, irpf:18.27},
+  vacio:    {dias:30, noches:0,   domingos:0, irpf:18.27},
+  intenso:  {dias:30, noches:96,  domingos:4, irpf:18.27}
+};
+
+function setPreset(name){
+  const p = presets[name];
+  document.getElementById('dias').value = p.dias;
+  document.getElementById('noches').value = p.noches;
+  document.getElementById('domingos').value = p.domingos;
+  document.getElementById('irpf').value = p.irpf;
+  calc();
+}
+
+function calc(){
+  const dias = +document.getElementById('dias').value;
+  const noches = +document.getElementById('noches').value;
+  const domingos = +document.getElementById('domingos').value;
+  const irpfPct = +document.getElementById('irpf').value;
+
+  document.getElementById('dias-v').textContent = dias;
+  document.getElementById('noches-v').textContent = noches+' h';
+  document.getElementById('domingos-v').textContent = domingos;
+  document.getElementById('irpf-v').textContent = irpfPct.toFixed(2).replace('.',',')+'%';
+
+  const smg = dias * RATES.smg;
+  const pc = dias * RATES.plusConv;
+  const pt = dias * RATES.plusTrans;
+  const pa = dias * RATES.plusAsist;
+  const tur = dias * RATES.plusTur;
+  const noc = noches * RATES.plusNoc;
+  const dom = domingos * RATES.plusDom;
+  const sv = dias > 0 ? RATES.segVida : 0;
+
+  const totalDev = smg+pc+pt+pa+tur+noc+dom+sv;
+  const devMetalico = totalDev - sv;
+
+  const remMensual = totalDev;
+  const prorrateo = dias > 0 ? RATES.prorrateoBase * (dias/30) : 0;
+  const baseSS = remMensual + prorrateo;
+
+  const ssCC = baseSS * RATES.ssCC;
+  const ssDes = baseSS * RATES.ssDes;
+  const ssFP = baseSS * RATES.ssFP;
+  const ssMEI = baseSS * RATES.ssMEI;
+  const totalSS = ssCC + ssDes + ssFP + ssMEI;
+
+  const irpfRate = irpfPct/100;
+  const irpfSal = devMetalico * irpfRate;
+  const irpfSV = sv * irpfRate;
+  const totalIRPF = irpfSal + irpfSV;
+
+  const totalDed = totalSS + totalIRPF;
+  const liquido = devMetalico - totalDed;
+
+  document.getElementById('d-smg').textContent = fmt(smg);
+  document.getElementById('d-pc').textContent = fmt(pc);
+  document.getElementById('d-pt').textContent = fmt(pt);
+  document.getElementById('d-pa').textContent = fmt(pa);
+  document.getElementById('d-tur').textContent = fmt(tur);
+  document.getElementById('d-noc').textContent = fmt(noc);
+  document.getElementById('d-dom').textContent = fmt(dom);
+  document.getElementById('d-sv').textContent = fmt(sv);
+  document.getElementById('d-total').textContent = fmt(totalDev);
+
+  document.getElementById('ss-cc').textContent = fmt(ssCC);
+  document.getElementById('ss-des').textContent = fmt(ssDes);
+  document.getElementById('ss-fp').textContent = fmt(ssFP);
+  document.getElementById('ss-mei').textContent = fmt(ssMEI);
+  document.getElementById('ir-sal').textContent = fmt(irpfSal);
+  document.getElementById('ir-sv').textContent = fmt(irpfSV);
+  document.getElementById('ded-total').textContent = fmt(totalDed);
+
+  document.getElementById('b-rem').textContent = fmt(remMensual);
+  document.getElementById('b-pp').textContent = fmt(prorrateo);
+  document.getElementById('b-tot').textContent = fmt(baseSS);
+
+  document.getElementById('m-bruto').textContent = fmt(totalDev);
+  document.getElementById('m-ded').textContent = fmt(totalDed);
+  document.getElementById('m-net').textContent = fmt(liquido);
+}
+
+['dias','noches','domingos','irpf'].forEach(id => {
+  document.getElementById(id).addEventListener('input', calc);
+});
+calc();
+</script>
