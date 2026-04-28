@@ -90,6 +90,7 @@
   .line .amt {
     font-variant-numeric: tabular-nums;
     color: #1c1c1a;
+    white-space: nowrap;
   }
   .line.highlight {
     font-weight: 600;
@@ -125,15 +126,16 @@
     font-variant-numeric: tabular-nums;
     margin: 0;
     letter-spacing: -0.5px;
+    white-space: nowrap;
   }
   .metric.gross .mv { color: #1d4ed8; }
   .metric.deduct .mv { color: #b91c1c; }
   .metric.net {
-    background: #1c1c1a;
-    border-color: #1c1c1a;
+    background: #1e3a8a;
+    border-color: #1e3a8a;
   }
-  .metric.net .ml { color: #a8a7a0; }
-  .metric.net .mv { color: white; font-size: 26px; }
+  .metric.net .ml { color: #c7d2fe; }
+  .metric.net .mv { color: white; font-size: 24px; }
   .cols {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -144,8 +146,15 @@
     h1 { font-size: 22px; }
     .cols { grid-template-columns: 1fr; }
     .row { grid-template-columns: 1fr 1fr 80px; gap: 14px; }
-    .metric .mv { font-size: 18px; }
-    .metric.net .mv { font-size: 22px; }
+    .metric { padding: 14px 12px; }
+    .metric .ml { font-size: 10px; margin-bottom: 8px; }
+    .metric .mv { font-size: 15px; letter-spacing: -0.3px; }
+    .metric.net .mv { font-size: 16px; }
+  }
+  @media (max-width: 380px) {
+    .metric { padding: 12px 10px; }
+    .metric .mv { font-size: 13px; }
+    .metric.net .mv { font-size: 14px; }
   }
   .card {
     background: white;
@@ -198,7 +207,7 @@
   </div>
   <div class="row">
     <label for="domingos">Domingos trabajados</label>
-    <input type="range" id="domingos" min="0" max="8" step="1" value="2">
+    <input type="range" id="domingos" min="0" max="5" step="1" value="2">
     <span class="val" id="domingos-v">2</span>
   </div>
   <div class="row">
